@@ -1,0 +1,34 @@
+Script started on Sun Mar 23 13:17:00 2014
+Script on a049408[1]% ls
+asg4_s.log  [0m[38;5;34mserver[0m*  server.c  server1.c  server2.c
+[mScript on a049408[2]% pwd
+/home/hercules/r/rauf202m/cs330/asg4_s
+Script on a049408[3]% server
+hostname: a049408
+Socket assigned: 32827
+arg1 read: listdir
+bytes sent: 67 & file size: 67
+No error sending file?
+ls
+arg1 read: getfile
+arg2 read: server1.c
+bytes sent: 4829 & file size: 4829
+No error sending file?
+arg1 read: putfile
+arg2 read: client1.c
+arg1 read: rmvfile
+arg2 read: tempFile
+arg1 read: listdir
+Error - Filestat
+Script on a049408[4]% server
+hostname: a049408
+Socket assigned: 39162
+arg1 read: listdir
+bytes sent: 77 & file size: 77
+No error sending file?
+ls
+error reading arg1
+Script on a049408[5]% exit
+exit
+
+Script done on Sun Mar 23 13:19:51 2014

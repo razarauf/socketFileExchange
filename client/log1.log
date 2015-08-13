@@ -1,0 +1,59 @@
+Script started on Sun Mar 23 13:16:46 2014
+Script on a049409[1]% ls
+asg4_c.log  [0m[38;5;34mcheck[0m*  check.c  [38;5;34mclient[0m*  client.c  client1.c  client2.c
+[mScript on a049409[2]% pwd
+/home/hercules/r/rauf202m/cs330/asg4_c
+Script on a049409[3]%  client
+
+ hostname: a049408
+
+ port number: 32827
+
+>listdir
+
+command entered: listdir
+arg1 entered: listdir
+
+>put   getfile serc ver1.x c
+
+command entered: getfile server1.c
+arg1 entered: getfile
+arg2 entered: server1.c
+arg2 is: server1.c
+arg2 read: server1.c
+
+>putfile client1.c
+
+command entered: putfile client1.c
+arg1 entered: putfile
+arg2 entered: client1.c
+bytes sent: 3379 & file size: 3379
+No error sending file?
+
+>rmvfile tempi File
+
+command entered: rmvfile tempFile
+arg1 entered: rmvfile
+arg2 entered: tempFile
+tempFile 
+>listdir
+
+command entered: listdir
+arg1 entered: listdir
+connect: Connection refused
+Script on a049409[4]% client
+
+ hostname: a4 049408
+
+ port number: 39162
+
+>lisdri   tdir
+
+command entered: listdir
+arg1 entered: listdir
+
+>eit  xit
+Script on a049409[5]% exit
+exit
+
+Script done on Sun Mar 23 13:19:48 2014

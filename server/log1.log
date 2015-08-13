@@ -1,0 +1,358 @@
+Script started on Sun Mar 23 13:17:15 2014
+ 
+news: OpenSSH
+ 
+Script on hercules[1]% ls
+asg4_1.log   asg4_s.log   server*      server.c     server1.c    server2.c
+Script on hercules[2]% l[Kpwd
+/home/hercules/r/rauf202m/cs330/asg4_s
+Script on hercules[3]% cd ..
+Script on hercules[4]% asg4_c
+asg4_c: Permission denied.
+Script on hercules[5]% ls
+asg1/         asg2-3/       asg3.zip      lab1_1/       lab3/         lab5-2/       lab7/         test/
+asg1-1/       asg2-p2/      asg4/         lab1_2/       lab3.zip      lab5.zip      lab7.zip      testfile
+asg1-w/       asg3-1/       asg4-2/       lab1_2-n/     lab4/         lab6-1/       lab8/
+asg2/         asg3-2/       asg4_c/       lab2/         lab4.zip      lab6-2/       lab8.zip
+asg2-2/       asg3-3/       asg4_s/       lab2-2/       lab5-1/       lab6.zip      processesEx/
+Script on hercules[6]% cd s[Kasg40[K)[K_c
+Script on hercules[7]% ls
+asg4_c.log   check*       check.c      client*      client.c     client1.c    client2.c    tempFile
+Script on hercules[8]% cat tempFile 
+asg4_1.log
+asg4_s.log
+server
+server.c
+server1.c
+server2.c
+tempFile
+Script on hercules[9]% ls
+asg4_c.log   check.c      client.c     client2.c    tempFile
+check*       client*      client1.c    server1.c
+Script on hercules[10]% cat server1.c 
+/*****************************************************************
+ Sockets Daemon Program
+
+  This code was modified from Nigel Horspools, "The Berkeley
+  Unix Environment".
+
+  A daemon process is started on some host.  A socket is acquired
+  for use, and it's number is displayed on the screen.  For clients
+  to connect to the server, they muse use this socket number.
+*****************************************************************/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
+
+/* Use port number 0 so that we can dynamically assign an unused
+ * port number. */
+#define PORTNUM         0
+
+/* Set up the location for the file to display when the daemon (okay,
+ * server for you religious types) is contacted by the client. */
+#define BBSD_FILE       "./test.bbs.file"
+/*"/nfs/net/share/ftp/pub/class/330/test.file" */
+
+/* Display error message on stderr and then exit. */
+#define OOPS(msg)       {perror(msg); exit(1);}
+
+#define MAXLINE 512
+
+int main()
+{
+  struct sockaddr_in saddr;       /* socket information */
+  struct hostent *hp;     /* host information */
+  char hostname[256];     /* host computer */
+  socklen_t slen;         /* length socket address */
+  int s;                  /* socket return value */
+  int sfd;                /* socket descriptor returned from accept() */
+  char ch[MAXLINE];       /* character for i/o */
+  FILE *sf;               /* various file descriptors */
+  int num_char=MAXLINE;
+  char filename[20];
+  
+  /*
+   * Build up our network address. Notice how it is made of machine name + port.
+   */
+
+  /* Clear the data structure (saddr) to 0's. */
+  memset(&saddr,0,sizeof(saddr));
+
+  /* Tell our socket to be of the internet family (AF_INET). */
+  saddr.sin_family = AF_INET;
+
+  /* Aquire the name of the current host system (the local machine). */
+  gethostname(hostname,sizeof(hostname));
+  
+  printf("hostname: %s\n", hostname);
+
+  /* Return misc. host information.  Store the results in the
+   * hp (hostent) data structure.  */
+  hp = gethostbyname(hostname);
+
+  /* Copy the host address to the socket data structure. */
+  memcpy(&saddr.sin_addr, hp->h_addr, hp->h_length);
+
+  /* Convert the integer Port Number to the network-short standard
+   * required for networking stuff. This accounts for byte order differences.*/
+  saddr.sin_port = htons(PORTNUM);
+  
+  /*
+   * Now that we have our data structure full of useful information,
+   * open up the socket the way we want to use it.
+   */
+  s = socket(AF_INET, SOCK_STREAM, 0);
+  if(s == -1)
+    OOPS("socket");
+
+  /* Register our address with the system. */
+  if(bind(s,(struct sockaddr *)&saddr,sizeof(saddr)) != 0)
+    OOPS("bind");
+
+  /* Display the port that has been assigned to us. */
+  slen = sizeof(saddr);
+  getsockname(s,(struct sockaddr *)&saddr,&slen);
+  printf("Socket assigned: %d\n",ntohs(saddr.sin_port));
+
+  /* Tell socket to wait for input.  Queue length is 1. */
+  if(listen(s,1) != 0)
+    OOPS("listen");
+
+  /* Loop indefinately and wait for events. */
+  for(;;)
+  {
+    /* Wait in the 'accept()' call for a client to make a connection. */
+    sfd = accept(s,NULL,NULL);
+    if(sfd == -1)
+      OOPS("accept");
+      
+      
+    //receive filename  
+    memset(&filename[0], 0, sizeof(filename));
+    if(read(sfd,filename,20)<1)
+    {
+      printf("error reading filename\n");
+      return 1;
+    }
+    printf("filename read: %s\n", filename);
+    
+    /* Open our file for copying to the socket. */
+    //bbf = open(BBSD_FILE, O_RDONLY);
+    
+    char data[1024];
+    
+    int data_recv;
+    
+    //while((num_char=recv(sfd,ch,MAXLINE,0)) > 0)
+    //{
+    //  if (write(2,ch,num_char) < num_char)
+    //     OOPS("writing");
+    //}
+    //if((data_recv=recv(sfd,data,19,0))<1)
+    //{
+    //  printf("error reading data of file\n");
+    //  return 1;
+    //} else
+    //{
+    //  printf("data recv: %d\n", data_recv);
+    //}
+    //printf("data read?\n");
+    
+    int bbf;
+    bbf = open(filename, O_WRONLY|O_CREAT, S_IRUSR|S_IWUSR);
+    
+    //write(2, data, sizeof(data));
+    
+    //if (write(bbf, data, sizeof(data)) < 0)
+    //{
+    //    write(2, "There was an error creating a new file\n", 44);
+    //    return 1;
+    //}
+    
+    while((num_char=recv(sfd,ch,MAXLINE,0)) > 0)
+    {
+      if (write(bbf,ch,num_char) < num_char)
+         OOPS("writing");
+    }
+    
+    close(bbf);
+
+    //if(bbf == -1)
+    //  write(sfd,"Error - File DNE?!\n", strlen("Error - File DNE?!\n"));
+    //else
+    //{
+    //  /*Read from file, write to socket*/
+    //  while((num_char=read(bbf,ch,MAXLINE))> 0)
+    //    if (write(sfd,ch,num_char) < num_char)
+    //       OOPS("writing");
+    //  close(bbf);
+    //}
+    close(sfd);
+  }
+
+  return 0;
+} 
+Script on hercules[11]% cd ../asg4_s
+Script on hercules[12]% ls
+asg4_1.log   asg4_s.log   client1.c    server*      server.c     server1.c    server2.c    tempFile
+Script on hercules[13]% cat client1.c 
+/*****************************************************************
+  Sockets Client Program 
+
+  This code is a modified version taken from Nigel Horspool's "The Berkeley
+  Unix Environment".
+
+  This client connects to a specified server (host) and receives
+  information from it.
+*****************************************************************/
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <string.h>
+
+/* Display error message on stderr and then exit. */
+#define OOPS(msg)       {perror(msg); exit(1);}
+
+#define MAXLINE 512
+
+int main(int argc, char *argv[])
+{
+  struct sockaddr_in bba; /* socket information */
+  struct hostent *hp;     /* host information */
+  int slen;               /* host computer */
+  int s;                  /* length socket address */
+  int rfd;
+  char ch[MAXLINE];       /* character for i/o */
+  int num_char=MAXLINE;   /* number of characters */
+  int port;               /* port to connect to */
+
+  char portnum[20];
+  char hostname[20];
+  char *filename = (char *) malloc(sizeof(char)*128);
+  printf("\n hostname: ");
+  scanf("%s", hostname);
+
+  printf("\n port number: ");
+  scanf("%s", portnum);
+  
+  printf("\n>");
+  scanf("%s", filename);
+  
+  int fn_length = strlen(filename);
+  
+  //printf("%i\n", fn_length);
+
+  /* Clear the data structure (saddr) to 0's. */
+  memset(&bba,0,sizeof(bba));
+
+  /* Tell our socket to be of the internet family (AF_INET). */
+  bba.sin_family = AF_INET;
+
+  /* Acquire the ip address of the server */
+  hp=gethostbyname(hostname);
+
+  /* Acquire the port #. */
+  port=atoi(portnum);
+
+  /* Copy the server's address to the socket address data structure. */
+  memcpy(&bba.sin_addr, hp->h_addr, hp->h_length);
+
+  /* Convert the integer Port Number to the network-short standard
+   * required for networking stuff. This accounts for byte order differences.*/
+  bba.sin_port=htons(port);
+  
+  /* Now that we have our data structure full of useful information,
+   * open up the socket the way we want to use it.
+   */
+  s = socket(AF_INET, SOCK_STREAM, 0);
+  if(s == -1)
+    OOPS("socket");
+  if(connect(s,(struct sockaddr *)&bba,sizeof(bba)) != 0)
+    OOPS("connect");
+
+  //write filename to server  
+  write(s, filename, fn_length);
+  
+  
+  struct stat fileStat;
+  if(stat(filename,&fileStat) < 0)
+  {
+    printf("Error - Filestat\n");
+    return 1;
+  }
+  
+  char *data = (char *) malloc(fileStat.st_size);
+        
+  int filedesc = open(filename, O_RDONLY);
+  
+  if (filedesc == -1){
+      return 1;
+  }
+  
+  if(read(filedesc, data, fileStat.st_size) < 0)
+      printf("error reading file\n");
+      
+  if(close(filedesc) < 0)
+  {
+      printf("file close error\n");
+      return 1;
+  } 
+  
+  int bytes_sent;
+  
+  if((bytes_sent=send(s, data, fileStat.st_size, 0))!= fileStat.st_size)
+  {
+    printf("Error - filesend\n");
+    return 1;
+  }else
+  {
+    printf("bytes sent: %d & file size: %d\n", bytes_sent, fileStat.st_size);
+  }
+  
+  printf("No error sending file?\n");
+  
+  
+  //printf("%s's content read: \n", filename);
+  ///* read from the socket, write to the screen */
+  //while( (num_char=read(s,ch,MAXLINE)) > 0 )
+  //  if ( write(1,ch,num_char) < num_char)
+  //    OOPS("writing");
+  
+  close(s);
+
+  return 0;
+}
+Script on hercules[14]% ls
+asg4_1.log   asg4_s.log   client1.c    server*      server.c     server1.c    server2.c
+Script on hercules[15]% ls
+asg4_1.log   asg4_s.log   client1.c    server*      server.c     server1.c    server2.c    tempFile
+Script on hercules[16]% cat tempFile 
+asg4_1.log
+asg4_s.log
+client1.c
+server
+server.c
+server1.c
+server2.c
+tempFile
+Script on hercules[17]% exit
+exit
+
+script done on Sun Mar 23 13:19:57 2014
